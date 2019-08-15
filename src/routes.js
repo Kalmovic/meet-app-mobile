@@ -1,3 +1,5 @@
+import React from 'react';
+import { View, Text } from 'react-native';
 import {
   createAppContainer,
   createSwitchNavigator,
@@ -24,6 +26,7 @@ export default (isSigned = false) =>
             Subscriptions,
             Profile,
           },
+
           {
             tabBarOptions: {
               keyboardHidesTabBar: true,

@@ -1,11 +1,18 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Background from '~/components/Background';
+import Header from '~/components/Header';
+
 // import { Container } from './styles';
 
 export default function Subscriptions() {
-  return <Background />;
+  return (
+    <>
+      <Header />
+      <Background />
+    </>
+  );
 }
 
 Subscriptions.navigationOptions = {
