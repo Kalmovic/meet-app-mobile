@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Image } from 'react-native';
-
+import { useDispatch, useSelector } from 'react-redux';
 import logo from '~/assets/M.png';
 import Background from '~/components/Background';
+import { signUpRequest } from '~/store/modules/auth/actions';
 import {
   Container,
   Form,
@@ -13,6 +14,19 @@ import {
 } from './styles';
 
 export default function SignUp({ navigation }) {
+  const dispatch = useDispatch();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const loading = useSelector(state => state.auth.loading);
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  function handleSubmit() {
+    dispatch(signUpRequest(name, email, password));
+  }
+
   return (
     <Background>
       <Container>
@@ -23,6 +37,10 @@ export default function SignUp({ navigation }) {
             autoCorrect={false}
             autoCapitalize="none"
             placeholder="Full name"
+            returnKeyType="next"
+            onSubmitEditing={() => emailRef.current.focus()}
+            value={name}
+            onChangeText={setName}
           />
           <FormInput
             icon="mail-outline"
@@ -30,14 +48,26 @@ export default function SignUp({ navigation }) {
             autoCorrect={false}
             autoCapitalize="none"
             placeholder="Type your email"
+            ref={emailRef}
+            returnKeyType="next"
+            onSubmitEditing={() => passwordRef.current.focus()}
+            value={email}
+            onChangeText={setEmail}
           />
           <FormInput
             icon="lock-outline"
             secureTextEntry
             placeholder="Type your secret password"
+            ref={passwordRef}
+            returnKeyType="send"
+            onSubmitEditing={handleSubmit}
+            value={password}
+            onChangeText={setPassword}
           />
 
-          <SubmitButton onPress={() => {}}>Log in</SubmitButton>
+          <SubmitButton loading={loading} onPress={handleSubmit}>
+            Log in
+          </SubmitButton>
         </Form>
 
         <SignLink onPress={() => navigation.navigate('SignIn')}>
