@@ -26,8 +26,8 @@ export default (isSigned = false) =>
             Subscriptions,
             Profile,
           },
-
           {
+            // resetOnBlur: true,
             tabBarOptions: {
               keyboardHidesTabBar: true,
               activeTintColor: '#fff',
