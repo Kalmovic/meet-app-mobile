@@ -1,8 +1,11 @@
 import styled from 'styled-components/native';
 import Button from '~/components/Button';
 
+export const MeetupList = styled.FlatList.attrs({
+  showsVerticalScrollIndicator: false,
+})``;
+
 export const DateSelector = styled.View`
-  flex: 1;
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -23,7 +26,7 @@ export const Meetup = styled.View`
 `;
 
 export const Info = styled.View`
-  margin: 15px 25px 25px 25px;
+  margin: 15px 25px 15px 25px;
 `;
 
 export const Avatar = styled.Image`
@@ -37,7 +40,7 @@ export const Name = styled.Text`
   margin-bottom: 3px;
 `;
 
-export const Date = styled.Text`
+export const When = styled.Text`
   color: #999;
   margin: 3px 0;
   font-size: 16px;
