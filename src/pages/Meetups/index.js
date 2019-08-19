@@ -1,44 +1,50 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { format, subDays, addDays } from 'date-fns';
+import { format, parseISO, subDays, addDays } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Background from '~/components/Background';
 import Header from '~/components/Header';
+import Meetup from '~/components/Meetup';
 import image from '~/assets/julho2.png';
 
-import {
-  MeetupList,
-  DateSelector,
-  Title,
-  Meetup,
-  Avatar,
-  Info,
-  When,
-  Name,
-  Location,
-  Organizer,
-  SubsButton,
-} from './styles';
+import { MeetupList, DateSelector, Title } from './styles';
 import api from '~/services/api';
 
 export default function Meetups() {
   const [date, setDate] = useState(new Date());
+  const [page, setPage] = useState(1);
   const [meetup, setMeetup] = useState([]);
-
   const dateFormatted = useMemo(() => format(date, 'MMMM do'), [date]);
+  const dateParamFormatted = useMemo(() => format(date, 'yyyy-MM-dd'), [date]);
 
   useEffect(() => {
     async function loadMeetups() {
       const response = await api.get('meetups', {
-        params: { date },
+        params: {
+          date: dateParamFormatted,
+          page: 1,
+        },
       });
 
-      console.tron.log(response.data);
       setMeetup(response.data);
     }
+
     loadMeetups();
-  }, [date]);
+  }, [date, dateParamFormatted]);
+
+  async function loadMore() {
+    const nextPage = page + 1;
+    const response = await api.get('meetups', {
+      params: {
+        date: dateParamFormatted,
+        page: nextPage,
+      },
+    });
+
+    setMeetup(nextPage >= 2 ? [...meetup, ...response.data] : response.data);
+    setPage(nextPage);
+  }
 
   function HandlePrevDay() {
     setDate(subDays(date, 1));
@@ -63,24 +69,11 @@ export default function Meetups() {
         </DateSelector>
 
         <MeetupList
+          onEndReachedThreshold={0.2}
+          onEndReached={loadMore}
           data={meetup}
           keyExtractor={item => String(item.id)}
-          renderItem={({ item }) => (
-            <Meetup>
-              <Avatar
-                source={{
-                  uri: `http://192.168.0.107:3333/files/${item.File.path}`,
-                }}
-              />
-              <Info>
-                <Name>{item.title}</Name>
-                <When>{item.date}</When>
-                <Location>{item.location}</Location>
-                <Organizer>Leading: {item.User.name}</Organizer>
-                <SubsButton>Subscribe</SubsButton>
-              </Info>
-            </Meetup>
-          )}
+          renderItem={({ item }) => <Meetup data={item} />}
         />
       </Background>
     </>
