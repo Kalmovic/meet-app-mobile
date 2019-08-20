@@ -1,24 +1,25 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { format, parseISO, subDays, addDays } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { format, subDays, addDays } from 'date-fns';
+import { TouchableOpacity, Alert } from 'react-native';
 import Background from '~/components/Background';
 import Header from '~/components/Header';
 import Meetup from '~/components/Meetup';
-import image from '~/assets/julho2.png';
 
-import { MeetupList, DateSelector, Title } from './styles';
+import { MeetupList, DateSelector, Title, Loading } from './styles';
 import api from '~/services/api';
 
 export default function Meetups() {
   const [date, setDate] = useState(new Date());
   const [page, setPage] = useState(1);
   const [meetup, setMeetup] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dateFormatted = useMemo(() => format(date, 'MMMM do'), [date]);
   const dateParamFormatted = useMemo(() => format(date, 'yyyy-MM-dd'), [date]);
 
   useEffect(() => {
+    setLoading(true);
     async function loadMeetups() {
       const response = await api.get('meetups', {
         params: {
@@ -28,6 +29,7 @@ export default function Meetups() {
       });
 
       setMeetup(response.data);
+      setLoading(false);
     }
 
     loadMeetups();
@@ -44,6 +46,37 @@ export default function Meetups() {
 
     setMeetup(nextPage >= 2 ? [...meetup, ...response.data] : response.data);
     setPage(nextPage);
+    setRefreshing(false);
+    setLoading(false);
+  }
+
+  async function loadOnRefresh() {
+    const response = await api.get('meetups', {
+      params: {
+        date,
+      },
+    });
+    setMeetup(response.data);
+    setRefreshing(false);
+  }
+
+  function refreshList() {
+    setRefreshing(true);
+    setPage(1);
+    loadOnRefresh();
+  }
+
+  async function handleSubscription(id) {
+    try {
+      await api.post(`meetups/${id}/subscriptions`);
+
+      Alert.alert(
+        'Cadastro realizado',
+        'Você agora está registrado nesta meetup'
+      );
+    } catch (err) {
+      Alert.alert('Erro', err.response.data.error);
+    }
   }
 
   function HandlePrevDay() {
@@ -68,13 +101,25 @@ export default function Meetups() {
           </TouchableOpacity>
         </DateSelector>
 
-        <MeetupList
-          onEndReachedThreshold={0.2}
-          onEndReached={loadMore}
-          data={meetup}
-          keyExtractor={item => String(item.id)}
-          renderItem={({ item }) => <Meetup data={item} />}
-        />
+        {loading ? (
+          <Loading size="large" color="#7159c1" />
+        ) : (
+          <MeetupList
+            onRefresh={() => refreshList()}
+            refreshing={refreshing}
+            onEndReachedThreshold={0.4}
+            onEndReached={loadMore}
+            data={meetup}
+            keyExtractor={item => String(item.id)}
+            renderItem={({ item }) => (
+              <Meetup
+                data={item}
+                canSub
+                action={() => handleSubscription(item.id)}
+              />
+            )}
+          />
+        )}
       </Background>
     </>
   );

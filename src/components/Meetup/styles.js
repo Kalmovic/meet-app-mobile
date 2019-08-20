@@ -37,10 +37,10 @@ export const Location = styled.Text`
 export const Organizer = styled.Text`
   color: #999;
   margin: 3px 0;
+  margin-bottom: 10px;
   font-size: 16px;
 `;
 
 export const SubsButton = styled(Button)`
-  margin-top: 10px;
   opacity: ${props => (props.enabled ? 0.6 : 1)};
 `;

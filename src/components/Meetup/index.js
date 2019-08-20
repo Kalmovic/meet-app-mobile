@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { View } from 'react-native';
+import SubsButton from '~/components/Button';
 
 import {
   Container,
@@ -10,14 +11,15 @@ import {
   When,
   Location,
   Organizer,
-  SubsButton,
 } from './styles';
 
-export default function Meetup({ data }) {
+export default function Meetup({ data, canSub, action }) {
   const dateParsed = useMemo(
     () => format(parseISO(data.date), "MMMM do',' HH:mm"),
     [data.date]
   );
+
+  console.tron.log(data);
 
   return (
     <Container>
@@ -31,9 +33,11 @@ export default function Meetup({ data }) {
         <When>{dateParsed}</When>
         <Location>{data.location}</Location>
         <Organizer>Leading: {data.User.name}</Organizer>
-        <SubsButton onPress={() => {}} enabled={data.past}>
-          Subscribe
-        </SubsButton>
+        {!data.past && (
+          <SubsButton onPress={action}>
+            {canSub ? 'Subscribe' : 'Cancel Subscription'}
+          </SubsButton>
+        )}
       </Info>
     </Container>
   );

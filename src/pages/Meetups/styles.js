@@ -17,3 +17,9 @@ export const Title = styled.Text`
   font-size: 25px;
   margin: 0 50px;
 `;
+
+export const Loading = styled.ActivityIndicator.attrs({
+  color: '#999',
+})`
+  margin-top: 20px;
+`;
