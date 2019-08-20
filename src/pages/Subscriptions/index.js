@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { withNavigationFocus } from 'react-navigation';
 import Background from '~/components/Background';
 import Header from '~/components/Header';
 import Meetup from '~/components/Meetup';
 import { MeetupList } from './styles';
 import api from '~/services/api';
 
-export default function Subscriptions() {
+function Subscriptions({ isFocused }) {
   const [subMeetup, setSubMeetup] = useState([]);
 
   async function loadSubsMeetups() {
@@ -17,8 +18,10 @@ export default function Subscriptions() {
   }
 
   useEffect(() => {
-    loadSubsMeetups();
-  }, []);
+    if (isFocused) {
+      loadSubsMeetups();
+    }
+  }, [isFocused]);
 
   async function handleCancel(id) {
     try {
@@ -58,3 +61,5 @@ Subscriptions.navigationOptions = {
     <Icon name="local-offer" size={20} color={tintColor} />
   ),
 };
+
+export default withNavigationFocus(Subscriptions);
