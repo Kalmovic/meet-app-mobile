@@ -25,7 +25,7 @@ export default (isSigned = false) =>
             Profile,
           },
           {
-            // resetOnBlur: true,
+            resetOnBlur: true,
             tabBarOptions: {
               keyboardHidesTabBar: true,
               activeTintColor: '#fff',

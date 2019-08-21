@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { format, subDays, addDays } from 'date-fns';
+import PropTypes from 'prop-types';
 import { TouchableOpacity, Alert } from 'react-native';
 import Background from '~/components/Background';
 import Header from '~/components/Header';
@@ -24,7 +25,6 @@ export default function Meetups() {
       const response = await api.get('meetups', {
         params: {
           date: dateParamFormatted,
-          page: 1,
         },
       });
 
@@ -46,7 +46,6 @@ export default function Meetups() {
 
     setMeetup(nextPage >= 2 ? [...meetup, ...response.data] : response.data);
     setPage(nextPage);
-    setRefreshing(false);
     setLoading(false);
   }
 
@@ -61,8 +60,8 @@ export default function Meetups() {
   }
 
   function refreshList() {
-    setRefreshing(true);
     setPage(1);
+    setRefreshing(true);
     loadOnRefresh();
   }
 
@@ -70,10 +69,7 @@ export default function Meetups() {
     try {
       await api.post(`meetups/${id}/subscriptions`);
 
-      Alert.alert(
-        'Cadastro realizado',
-        'Você agora está registrado nesta meetup'
-      );
+      Alert.alert('Success!', 'You are now subscribed to this meetup');
     } catch (err) {
       Alert.alert('Erro', err.response.data.error);
     }
@@ -102,13 +98,13 @@ export default function Meetups() {
         </DateSelector>
 
         {loading ? (
-          <Loading size="large" color="#7159c1" />
+          <Loading size="large" color="#f94d6a" />
         ) : (
           <MeetupList
+            onEndReachedThreshold={0.2}
+            onEndReached={() => loadMore()}
             onRefresh={() => refreshList()}
             refreshing={refreshing}
-            onEndReachedThreshold={0.4}
-            onEndReached={loadMore}
             data={meetup}
             keyExtractor={item => String(item.id)}
             renderItem={({ item }) => (
@@ -125,8 +121,15 @@ export default function Meetups() {
   );
 }
 
+const tabBarIcon = ({ tintColor }) => (
+  <Icon name="format-list-bulleted" size={20} color={tintColor} />
+);
+
+tabBarIcon.propTypes = {
+  tintColor: PropTypes.string.isRequired,
+};
+
 Meetups.navigationOptions = {
-  tabBarIcon: ({ tintColor }) => (
-    <Icon name="format-list-bulleted" size={20} color={tintColor} />
-  ),
+  tabBarLabel: 'Meetups',
+  tabBarIcon,
 };

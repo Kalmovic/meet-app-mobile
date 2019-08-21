@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { withNavigationFocus } from 'react-navigation';
+import PropTypes from 'prop-types';
 import Background from '~/components/Background';
 import Header from '~/components/Header';
 import Meetup from '~/components/Meetup';
@@ -27,10 +28,7 @@ function Subscriptions({ isFocused }) {
     try {
       await api.delete(`subscriptions/${id}`);
 
-      Alert.alert(
-        'Cadastro cancelado',
-        'Você cancelou seu registro a esta meetup.'
-      );
+      Alert.alert('Success', 'You are unsubscribed from this meeup.');
       loadSubsMeetups();
     } catch (err) {
       Alert.alert('Erro', err.response.data.error);
@@ -56,10 +54,25 @@ function Subscriptions({ isFocused }) {
   );
 }
 
+const tabBarIcon = ({ tintColor }) => (
+  <Icon name="local-offer" size={20} color={tintColor} />
+);
+
+tabBarIcon.propTypes = {
+  tintColor: PropTypes.string.isRequired,
+};
+
 Subscriptions.navigationOptions = {
-  tabBarIcon: ({ tintColor }) => (
-    <Icon name="local-offer" size={20} color={tintColor} />
-  ),
+  tabBarLabel: 'Subscriptions',
+  tabBarIcon,
+};
+
+Subscriptions.propTypes = {
+  isFocused: PropTypes.bool,
+};
+
+Subscriptions.defaultProps = {
+  isFocused: false,
 };
 
 export default withNavigationFocus(Subscriptions);

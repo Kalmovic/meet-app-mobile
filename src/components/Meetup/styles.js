@@ -7,6 +7,13 @@ export const Container = styled.View`
   background: #fff;
 `;
 
+export const Line = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 10px;
+`;
+
 export const Info = styled.View`
   margin: 15px 25px 15px 25px;
 `;
@@ -22,22 +29,9 @@ export const Name = styled.Text`
   margin-bottom: 3px;
 `;
 
-export const When = styled.Text`
+export const Text = styled.Text`
   color: #999;
-  margin: 3px 0;
-  font-size: 16px;
-`;
-
-export const Location = styled.Text`
-  color: #999;
-  margin: 3px 0;
-  font-size: 16px;
-`;
-
-export const Organizer = styled.Text`
-  color: #999;
-  margin: 3px 0;
-  margin-bottom: 10px;
+  margin: 3px 5px;
   font-size: 16px;
 `;
 
